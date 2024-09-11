@@ -14,10 +14,10 @@ class ProductsTest < ApplicationSystemTestCase
     visit products_url
     click_on "New product"
 
-    fill_in "Categories", with: @product.categories_id
+    fill_in "Category", with: @product.category_id
     fill_in "Description", with: @product.description
     fill_in "Name", with: @product.name
-    fill_in "Suppliers", with: @product.suppliers_id
+    fill_in "Supplier", with: @product.supplier_id
     click_on "Create Product"
 
     assert_text "Product was successfully created"
@@ -28,10 +28,10 @@ class ProductsTest < ApplicationSystemTestCase
     visit product_url(@product)
     click_on "Edit this product", match: :first
 
-    fill_in "Categories", with: @product.categories_id
+    fill_in "Category", with: @product.category_id
     fill_in "Description", with: @product.description
     fill_in "Name", with: @product.name
-    fill_in "Suppliers", with: @product.suppliers_id
+    fill_in "Supplier", with: @product.supplier_id
     click_on "Update Product"
 
     assert_text "Product was successfully updated"
