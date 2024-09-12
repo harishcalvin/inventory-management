@@ -20,13 +20,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_09_110439) do
 
   create_table "product_variants", force: :cascade do |t|
     t.integer "product_id", null: false
-    t.integer "variant_id", null: false
     t.decimal "price"
     t.integer "stock_quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "size"
+    t.string "color"
+    t.string "material"
     t.index ["product_id"], name: "index_product_variants_on_product_id"
-    t.index ["variant_id"], name: "index_product_variants_on_variant_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -46,23 +47,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_09_110439) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "variant_options", force: :cascade do |t|
-    t.integer "variant_id", null: false
-    t.string "options"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["variant_id"], name: "index_variant_options_on_variant_id"
-  end
-
-  create_table "variants", force: :cascade do |t|
-    t.string "type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   add_foreign_key "product_variants", "products"
-  add_foreign_key "product_variants", "variants"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "suppliers"
-  add_foreign_key "variant_options", "variants"
 end
