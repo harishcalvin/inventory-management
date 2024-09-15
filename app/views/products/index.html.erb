@@ -2,14 +2,19 @@
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
   <% end %>
-
   <% content_for :title, "Products" %>
-
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Products</h1>
-    <%= link_to "New product", new_product_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+    <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        New Product
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <%= link_to "Add product without variant", new_product_path(variant: false), class: "dropdown-item" %>
+        <%= link_to "Add product with variant", new_product_path(variant: true), class: "dropdown-item" %>
+      </div>
+    </div>
   </div>
-
   <div id="products" class="min-w-full">
     <% @products.each do |product| %>
       <%= render product %>

@@ -1,0 +1,28 @@
+  <%= form_with(model: @product) do |form| %>
+  <div id="no-variant-fields">
+    <%= form.label :price %>
+    <%= form.number_field :price, step: 0.01 %>
+    <%= form.label :stock_quantity %>
+    <%= form.number_field :stock_quantity %>
+  </div>
+  <div class="variant-fields">
+    <%= f.select :variant_type, ['Size', 'Color', 'Material'], { prompt: "Select variant type" }, class: 'variant-type-select' %>
+    <div class="variant-value-field" data-type="size" style="display: none;">
+      <%= f.label :size %>
+      <%= f.text_field :size %>
+    </div>
+    <div class="variant-value-field" data-type="color" style="display: none;">
+      <%= f.label :color %>
+      <%= f.text_field :color %>
+    </div>
+    <div class="variant-value-field" data-type="material" style="display: none;">
+      <%= f.label :material %>
+      <%= f.text_field :material %>
+    </div>
+    <%= f.label :price %>
+    <%= f.number_field :price, step: 0.01 %>
+    <%= f.label :stock_quantity %>
+    <%= f.number_field :stock_quantity %>
+    <%= link_to "Remove", "#", class: "remove-variant" %>
+  </div>
+<% end %>

@@ -10,7 +10,7 @@ Supplier.destroy_all
   supplier = create(:supplier)
 
   # Random number of phases between 2 and 14
-  rand(100).times do
+  rand(5).times do
     create(:product, category: category, supplier: supplier)
   end
 end
