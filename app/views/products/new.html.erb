@@ -1,77 +1,89 @@
-<h1>New Product</h1>
-<%= form_with(model: @product, local: true, html: { id: 'product-form' }) do |form| %>
-  <% if @product.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
-      <ul>
-        <% @product.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<div class="max-w-5xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+  <h1 class="text-3xl font-bold mb-6">New Product</h1>
+  <%= form_with(model: @product, local: true, html: { id: 'product-form', class: 'space-y-6' }) do |form| %>
+    <% if @product.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
+        <h2 class="text-lg font-semibold"><%= pluralize(@product.errors.count, "error") %> prohibited this product from being saved:</h2>
+        <ul class="list-disc list-inside mt-2">
+          <% @product.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="space-y-4">
+      <div>
+        <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+      </div>
+      <div>
+        <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+      </div>
+      <div>
+        <%= form.label :category_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.collection_select :category_id, Category.all, :id, :name, { prompt: "Select a category" }, { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" } %>
+      </div>
+      <div>
+        <%= form.label :supplier_id, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.collection_select :supplier_id, Supplier.all, :id, :name, { prompt: "Select a supplier" }, { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" } %>
+      </div>
+      <% if @product.product_variants.empty? %>
+        <div>
+          <%= form.label :price, "Price", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :price, step: 0.01, min: 0, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+        <div>
+          <%= form.label :stock_quantity, "Stock Quantity", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :stock_quantity, min: 0, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+        </div>
+      <% else %>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h3 class="text-lg font-semibold mb-4">Variants</h3>
+          <div class="space-y-4">
+            <div>
+              <%= label_tag :sizes, "Sizes", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_field_tag :sizes, nil, placeholder: "e.g. S, M, L", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+            </div>
+            <div>
+              <%= label_tag :colors, "Colors", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_field_tag :colors, nil, placeholder: "e.g. Red, Blue, Green", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+            </div>
+            <div>
+              <%= label_tag :materials, "Materials", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= text_field_tag :materials, nil, placeholder: "e.g. Cotton, Polyester", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" %>
+            </div>
+            <button type="button" id="generate-variants" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              Generate Variants
+            </button>
+          </div>
+          <div id="variants-review" class="mt-6" style="display: none;">
+            <h3 class="text-lg font-semibold mb-4">Review Variants</h3>
+            <div class="overflow-x-auto">
+              <table id="variants-table" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Material</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="mt-6">
+      <%= form.submit 'Create Product', id: 'create-product-btn', class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500", style: @product.product_variants.empty? ? "" : "display: none;" %>
     </div>
   <% end %>
-  <div class="field">
-    <%= form.label :name %>
-    <%= form.text_field :name %>
-  </div>
-  <div class="field">
-    <%= form.label :description %>
-    <%= form.text_area :description %>
-  </div>
-  <div class="field">
-    <%= form.label :category_id %>
-    <%= form.collection_select :category_id, Category.all, :id, :name, prompt: "Select a category" %>
-  </div>
-  <div class="field">
-    <%= form.label :supplier_id %>
-    <%= form.collection_select :supplier_id, Supplier.all, :id, :name, prompt: "Select a supplier" %>
-  </div>
-  <% if @product.product_variants.empty? %>
-    <div class="field">
-      <%= form.label :price, "Price" %>
-      <%= form.number_field :price, step: 0.01, min: 0 %>
-    </div>
-    <div class="field">
-      <%= form.label :stock_quantity, "Stock Quantity" %>
-      <%= form.number_field :stock_quantity, min: 0 %>
-    </div>
-  <% else %>
-    <h3>Variants</h3>
-    <div class="field">
-      <%= label_tag :sizes %>
-      <%= text_field_tag :sizes, nil, placeholder: "e.g. S, M, L" %>
-    </div>
-    <div class="field">
-      <%= label_tag :colors %>
-      <%= text_field_tag :colors, nil, placeholder: "e.g. Red, Blue, Green" %>
-    </div>
-    <div class="field">
-      <%= label_tag :materials %>
-      <%= text_field_tag :materials, nil, placeholder: "e.g. Cotton, Polyester" %>
-    </div>
-    <button type="button" id="generate-variants">Generate Variants</button>
-    <div id="variants-review" style="display: none;">
-      <h3>Review Variants</h3>
-      <table id="variants-table">
-        <thead>
-          <tr>
-            <th>Size</th>
-            <th>Color</th>
-            <th>Material</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  <% end %>
-  <div class="actions">
-    <%= form.submit 'Create Product' %>
-  </div>
-<% end %>
-<%= link_to 'Back', products_path %>
+  <%= link_to 'Back', products_path, class: "mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-500" %>
+</div>
 <script>
   const generateVariantsBtn = document.getElementById('generate-variants');
   const variantsReview = document.getElementById('variants-review');
@@ -82,7 +94,7 @@
     const sizes = document.getElementById('sizes').value.split(',').map(s => s.trim());
     const colors = document.getElementById('colors').value.split(',').map(c => c.trim());
     const materials = document.getElementById('materials').value.split(',').map(m => m.trim());
-
+    const createProductBtn = document.getElementById('create-product-btn');
     variantsTable.innerHTML = '';
     // console.log(sizes, colors, materials)
 
@@ -103,11 +115,16 @@
     }
 
     variantsReview.style.display = 'block';
+    createProductBtn.style.display = 'inline-flex';  // Show the button after generating variants
   });
 
   variantsTable.addEventListener('click', function(e) {
     if (e.target.classList.contains('remove-variant')) {
       e.target.closest('tr').remove();
+      if (variantsTable.rows.length === 0) {
+        createProductBtn.style.display = 'none';  // Hide the button if all variants are removed
+        variantsReview.style.display = 'none';
+      }
     }
   });
 

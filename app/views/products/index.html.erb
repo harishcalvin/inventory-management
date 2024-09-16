@@ -5,13 +5,17 @@
   <% content_for :title, "Products" %>
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Products</h1>
-    <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <div class="relative group">
+      <button class="btn btn-primary flex items-center" type="button" id="dropdownMenuButton">
         New Product
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
       </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <%= link_to "Add product without variant", new_product_path(variant: false), class: "dropdown-item" %>
-        <%= link_to "Add product with variant", new_product_path(variant: true), class: "dropdown-item" %>
+      <div class="absolute right-0 hidden group-hover:block hover:block bg-white shadow-lg mt-2 rounded-lg z-10 w-48">
+        <div class="absolute inset-0 top-[-10px] h-[10px]"></div>
+        <%= link_to "Add product without variant", new_product_path(variant: false), class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-t-lg" %>
+        <%= link_to "Add product with variant", new_product_path(variant: true), class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-b-lg" %>
       </div>
     </div>
   </div>
