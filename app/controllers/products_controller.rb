@@ -62,8 +62,20 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        create_default_variant if @product.product_variants.empty?
-        format.html { redirect_to product_url(@product), notice: "Product was successfully updated." }
+        if params[:variants].present?
+          variants = JSON.parse(params[:variants])
+          @product.product_variants.destroy_all
+          variants.each do |variant|
+            @product.product_variants.create(
+              size: variant['size'],
+              color: variant['color'],
+              material: variant['material'],
+              price: variant['price'],
+              stock_quantity: variant['stock_quantity']
+            )
+          end
+        end
+        format.html { redirect_to @product, notice: "Product was successfully updated." }
         format.json { render :show, status: :ok, location: @product }
       else
         format.html { render :edit, status: :unprocessable_entity }
