@@ -19,42 +19,34 @@
           <dt class="text-sm font-medium text-gray-500">Supplier</dt>
           <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= @product.supplier&.name || 'N/A' %></dd>
         </div>
-        <% default_variant = @product.default_variant %>
-        <% if default_variant %>
+        <% if @product.product_variants.empty? || (@product.product_variants.count == 1 && @product.product_variants.first.size == 'Default') %>
+          <% variant = @product.product_variants.first %>
           <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-500">Price</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              <%= number_to_currency(default_variant&.price || 0) %>
-            </dd>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= number_to_currency(variant&.price || 0, unit: "₹") %></dd>
           </div>
           <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-500">Stock Quantity</dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              <%= default_variant.stock_quantity %>
-            </dd>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"><%= variant&.stock_quantity || 0 %></dd>
           </div>
         <% end %>
       </dl>
     </div>
   </div>
-  <% if @product.default_variant.nil? %>
+  <% if @product.product_variants.count > 1 || (@product.product_variants.count == 1 && @product.product_variants.first.size != 'Default') %>
     <div class="mt-8">
-      <h2 class="text-2xl font-bold mb-4">
-        <%= @product.product_variants.count == 1 && @product.product_variants.first.size == 'Default' ? 'Default Variant' : 'Product Variants' %>
-      </h2>
+      <h2 class="text-2xl font-bold mb-4">Product Variants</h2>
       <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <ul class="divide-y divide-gray-200">
           <% @product.product_variants.each do |variant| %>
             <li class="px-4 py-4 sm:px-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <% if variant.size != 'Default' %>
-                    <p class="text-sm font-medium text-indigo-600 truncate">
-                      <%= "#{variant.size} - #{variant.color} - #{variant.material}" %>
-                    </p>
-                  <% end %>
+                  <p class="text-sm font-medium text-indigo-600 truncate">
+                    <%= "#{variant.size} - #{variant.color} - #{variant.material}" %>
+                  </p>
                   <p class="mt-1 text-sm text-gray-500">
-                    Price: <%= number_to_currency(variant.price) %> | Stock: <%= variant.stock_quantity %>
+                    Price: <%= number_to_currency(variant.price, unit: "₹") %> | Stock: <%= variant.stock_quantity %>
                   </p>
                 </div>
               </div>

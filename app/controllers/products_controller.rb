@@ -3,7 +3,7 @@ class ProductsController < ApplicationController
 
   # GET /products or /products.json
   def index
-    @products = Product.all
+    @products = Product.includes(:category, :supplier, :product_variants).all
   end
 
   # GET /products/1 or /products/1.json
@@ -31,7 +31,7 @@ class ProductsController < ApplicationController
         if product_params[:price].present? && product_params[:stock_quantity].present?
           # Create a default variant for products without explicit variants
           @product.product_variants.create(
-            size: 'Default',
+            size: "Default",
             price: product_params[:price],
             stock_quantity: product_params[:stock_quantity]
           )
@@ -67,11 +67,11 @@ class ProductsController < ApplicationController
           @product.product_variants.destroy_all
           variants.each do |variant|
             @product.product_variants.create(
-              size: variant['size'],
-              color: variant['color'],
-              material: variant['material'],
-              price: variant['price'],
-              stock_quantity: variant['stock_quantity']
+              size: variant["size"],
+              color: variant["color"],
+              material: variant["material"],
+              price: variant["price"],
+              stock_quantity: variant["stock_quantity"]
             )
           end
         end
@@ -105,5 +105,5 @@ class ProductsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def product_params
       params.require(:product).permit(:name, :description, :category_id, :supplier_id, :price, :stock_quantity)
-    end    
+    end
 end

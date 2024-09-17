@@ -5,6 +5,7 @@
   <% content_for :title, "Products" %>
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Products</h1>
+    <!--
     <div class="relative group">
       <button class="btn btn-primary flex items-center" type="button" id="dropdownMenuButton">
         New Product
@@ -18,13 +19,113 @@
         <%= link_to "Add product with variant", new_product_path(variant: true), class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-b-lg" %>
       </div>
     </div>
+    -->
+    <div class="relative group">
+      <button class="btn btn-primary flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded" type="button" id="dropdownMenuButton">
+        New Product
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div class="absolute right-0 hidden group-hover:block hover:block bg-white shadow-lg mt-2 rounded-lg z-10 w-56">
+        <div class="absolute inset-0 top-[-10px] h-[10px]"></div>
+        <%= link_to "Add product without variant", new_product_path(variant: false), class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-t-lg" %>
+        <%= link_to "Add product with variant", new_product_path(variant: true), class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-b-lg" %>
+      </div>
+    </div>
   </div>
-  <div id="products" class="min-w-full">
+  <div id="products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
     <% @products.each do |product| %>
-      <%= render product %>
-      <p>
-        <%= link_to "Show this product", product, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
+      <div class="bg-card text-card-foreground rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h3 class="text-lg font-semibold"><%= product.name %></h3>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full" style="background-color: <%= category_color(product.category.name) %>; color: <%= contrasting_text_color(category_color(product.category.name)) %>;">
+              <%= product.category.name %>
+            </span>
+          </div>
+          <p class="text-muted-foreground text-sm mb-4 line-clamp-3"><%= product.description %></p>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span class="text-muted-foreground text-sm">
+                Supplier: <%= product.supplier.name %>
+              </span>
+            </div>
+            <% if product.product_variants.any? %>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-muted-foreground text-sm">
+                  Price: 
+                  <% if product.product_variants.any? %>
+                    <% min_price = product.product_variants.minimum(:price) %>
+                    <% max_price = product.product_variants.maximum(:price) %>
+                    <% if min_price.present? && max_price.present? %>
+                      <% if min_price == max_price %>
+                        <%= number_to_currency(min_price, unit: "₹") %>
+                      <% else %>
+                        <%= number_to_currency(min_price, unit: "₹") %> - <%= number_to_currency(max_price, unit: "₹") %>
+                      <% end %>
+                    <% else %>
+                      N/A
+                    <% end %>
+                  <% else %>
+                    <%= product.price.present? ? number_to_currency(product.price) : "N/A" %>
+                  <% end %>
+                </span>
+              </div>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+                <span class="text-muted-foreground text-sm">
+                  Total Stock: <%= product.product_variants.sum(:stock_quantity) %>
+                </span>
+              </div>
+              <!--
+              <%# implimented this later but it was too much info as of now %>
+
+              <div class="mt-2">
+                <p class="text-sm font-medium">Variants:</p>
+                <ul class="list-disc list-inside text-xs text-muted-foreground">
+                  <% product.product_variants.each do |variant| %>
+                    <li>
+                      <%= [variant.size, variant.color, variant.material].compact.join(', ') %> - 
+                      <%= variant.price.present? ? "$#{'%.2f' % variant.price}" : "N/A" %>
+                      (Stock: <%= variant.stock_quantity.present? ? variant.stock_quantity : "N/A" %>)
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+              -->
+            <% else %>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-muted-foreground text-sm">
+                  Price: N/A
+                </span>
+              </div>
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+                <span class="text-muted-foreground text-sm">
+                  Stock: N/A
+                </span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="bg-muted p-4">
+          <%= link_to "Show details", product, class: "w-full inline-block text-center rounded-md bg-gray-900 text-white hover:bg-gray-800 px-4 py-2 text-sm font-medium transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900" %>
+        </div>
+      </div>
     <% end %>
   </div>
 </div>
