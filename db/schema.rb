@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_22_103712) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_22_114044) do
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.decimal "gst"
@@ -48,6 +48,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_22_103712) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sold_items", force: :cascade do |t|
+    t.integer "sale_id", null: false
+    t.integer "product_variant_id", null: false
+    t.integer "quantity", null: false
+    t.decimal "price", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_variant_id"], name: "index_sold_items_on_product_variant_id"
+    t.index ["sale_id"], name: "index_sold_items_on_sale_id"
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -57,4 +68,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_22_103712) do
   add_foreign_key "product_variants", "products"
   add_foreign_key "products", "categories"
   add_foreign_key "products", "suppliers"
+  add_foreign_key "sold_items", "product_variants"
+  add_foreign_key "sold_items", "sales"
 end
