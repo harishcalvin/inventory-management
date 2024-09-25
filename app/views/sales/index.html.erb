@@ -1,21 +1,49 @@
-<div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+<h1 class="text-3xl font-bold mb-4">Sales</h1>
+<div data-controller="sales" data-sales-products="<%= @products_json.to_json %>">
+  <h2 class="text-2xl font-bold mb-2">Create New Sale</h2>
+  <%= form_with(model: Sale.new, local: false, id: 'sale-form', data: { sales_target: "form", action: "submit->sales#completeSale" }) do |form| %>
+    <div class="add-item-form mb-4">
+      <%= select_tag 'product_id', 
+                     options_for_select(@products_for_select), 
+                     prompt: "Select a product", 
+                     class: "form-select mb-2",
+                     data: { 
+                       sales_target: "productSelect", 
+                       action: "change->sales#handleProductChange" 
+                     } %>
+      <%= select_tag 'variant_id', 
+                     '<option value="">Select a variant</option>'.html_safe, 
+                     class: "form-select mb-2",
+                     style: 'display: none;', 
+                     data: { 
+                       sales_target: "variantSelect", 
+                       action: "change->sales#handleVariantChange" 
+                     } %>
+      <%= number_field_tag 'quantity', 1, min: 1, class: "form-input mb-2", data: { sales_target: "quantityInput" } %>
+      <%= button_tag 'Add to Bill', type: 'button', class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded", data: { action: "click->sales#addItemToBill" } %>
+    </div>
+    <h3 class="text-xl font-bold mb-2">Sale Items</h3>
+    <table id="sale-items" class="min-w-full divide-y divide-gray-200" data-sales-target="itemsTable">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Variant</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200" data-sales-target="itemsBody">
+        <!-- Sale items will be dynamically added here -->
+      </tbody>
+    </table>
+    <div class="mt-4">
+      Total: <span data-sales-target="total" class="font-bold">₹0.00</span>
+      <%= form.hidden_field :total, data: { sales_target: "totalInput" } %>
+    </div>
+    <%= form.submit 'Complete Sale', class: "mt-4 inline-block bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded" %>
   <% end %>
-
-  <% content_for :title, "Sales" %>
-
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Sales</h1>
-    <%= link_to "New sale", new_sale_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
-  </div>
-
-  <div id="sales" class="min-w-full">
-    <% @sales.each do |sale| %>
-      <%= render sale %>
-      <p>
-        <%= link_to "Show this sale", sale, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-      </p>
-    <% end %>
-  </div>
 </div>
+<%= link_to 'View Sales History', sold_items_path, class: "mt-4 inline-block bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded" %>
+<div id="notice" class="mt-4 p-4 bg-green-100 text-green-700 rounded" style="display: none;"></div>

@@ -1,0 +1,12 @@
+<tr class="sale-item-fields">
+  <td>
+    <%= select_tag 'sale[items][][product_id]', options_from_collection_for_select(Product.all, :id, :name), prompt: "Select a product", class: 'product-select' %>
+  </td>
+  <td>
+    <%= select_tag 'sale[items][][product_variant_id]', '', prompt: "Select a variant", class: 'variant-select', style: 'display: none;' %>
+  </td>
+  <td><%= number_field_tag 'sale[items][][quantity]', 1, min: 1, class: 'quantity-input' %></td>
+  <td><%= number_field_tag 'sale[items][][price]', '', step: 0.01, class: 'price-input', readonly: true %></td>
+  <td class="subtotal">0.00</td>
+  <td><button type="button" class="remove-item">Remove</button></td>
+</tr>

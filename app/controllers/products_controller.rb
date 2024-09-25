@@ -5,7 +5,6 @@ class ProductsController < ApplicationController
   def index
     @products = Product.includes(:category, :supplier, :product_variants).all
   end
-
   # GET /products/1 or /products/1.json
   def show
     @product = Product.includes(:category, :supplier, :product_variants).find(params[:id])
@@ -20,7 +19,13 @@ class ProductsController < ApplicationController
   end
   # GET /products/1/edit
   def edit
-    @product.product_variants.build.build_variant.variant_options.build if @product.product_variants.empty?
+   # @product.product_variants.build.build_variant.variant_options.build if @product.product_variants.empty?
+  end
+
+  def variants
+    product = Product.find(params[:id])
+    variants = product.product_variants.map { |v| { id: v.id, name: v.display_name, price: v.price } }
+    render json: { has_variants: variants.any?, variants: variants }
   end
 
   # POST /products or /products.json
@@ -56,25 +61,34 @@ class ProductsController < ApplicationController
       end
     end
   end
-  
-  
+
   # PATCH/PUT /products/1 or /products/1.json
   def update
     respond_to do |format|
       if @product.update(product_params)
         if params[:variants].present?
           variants = JSON.parse(params[:variants])
-          @product.product_variants.destroy_all
           variants.each do |variant|
-            @product.product_variants.create(
+            existing_variant = @product.product_variants.find_or_initialize_by(
               size: variant["size"],
               color: variant["color"],
-              material: variant["material"],
-              price: variant["price"],
-              stock_quantity: variant["stock_quantity"]
+              material: variant["material"]
             )
+
+            # Update only the fields that are present in the variant data
+            existing_variant.price = variant["price"] if variant["price"].present?
+            existing_variant.stock_quantity = variant["stock_quantity"] if variant["stock_quantity"].present?
+
+            existing_variant.save
           end
+        elsif product_params[:price].present? || product_params[:stock_quantity].present?
+          # Update or create a single variant for products without explicit variants
+          variant = @product.product_variants.first_or_initialize
+          variant.price = product_params[:price] if product_params[:price].present?
+          variant.stock_quantity = product_params[:stock_quantity] if product_params[:stock_quantity].present?
+          variant.save
         end
+
         format.html { redirect_to @product, notice: "Product was successfully updated." }
         format.json { render :show, status: :ok, location: @product }
       else

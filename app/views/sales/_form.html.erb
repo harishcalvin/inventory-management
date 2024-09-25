@@ -1,8 +1,7 @@
-<%= form_with(model: sale, class: "contents") do |form| %>
+<%= form_with(model: sale, local: true, class: "contents") do |form| %>
   <% if sale.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
       <h2><%= pluralize(sale.errors.count, "error") %> prohibited this sale from being saved:</h2>
-
       <ul>
         <% sale.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -10,17 +9,31 @@
       </ul>
     </div>
   <% end %>
-
   <div class="my-5">
     <%= form.label :date %>
     <%= form.date_field :date, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
   </div>
-
+  <h2>Sold Items</h2>
+  <%= form.fields_for :sold_items do |sold_item_form| %>
+    <div>
+      <%= sold_item_form.label :product_variant_id %>
+      <%= sold_item_form.collection_select :product_variant_id, ProductVariant.all, :id, :product_name %>
+    </div>
+    <div>
+      <%= sold_item_form.label :quantity %>
+      <%= sold_item_form.number_field :quantity %>
+    </div>
+    <div>
+      <%= sold_item_form.label :price %>
+      <%= sold_item_form.number_field :price, step: 0.01 %>
+    </div>
+  <% end %>
+  <%# total count %>
   <div class="my-5">
     <%= form.label :total %>
-    <%= form.text_field :total, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.number_field :total, class: "block shadow rounded-md border border-gray-400 outline-none px-3 py-2 mt-2 w-full" %>
   </div>
-
+  <%# submit button %>
   <div class="inline">
     <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
   </div>

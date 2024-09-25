@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   resources :sales
   resources :products
+  resources :sold_items
+  resources :products do
+    get 'variants', on: :member
+  end
   get "home/index"
   root "home#index"
 

@@ -1,5 +1,4 @@
 # spec/factories/index.rb
-
 FactoryBot.define do
   # Category Factory
   factory :category do
@@ -16,7 +15,17 @@ FactoryBot.define do
   factory :product do
     name { Faker::Commerce.product_name }
     description { Faker::Lorem.sentence }
-    category_id { Category.all.sample.id } # Random category
-    supplier_id { Supplier.all.sample.id } # Random supplier
+    category
+    supplier
+  end
+
+  # Product Variant Factory
+  factory :product_variant do
+    product # This ensures the product_variant belongs to a product
+    price { Faker::Commerce.price(range: 10..100.0, as_string: true) }
+    stock_quantity { Faker::Number.between(from: 1, to: 100) }
+    size { Faker::Commerce.material }
+    color { Faker::Color.color_name }
+    material { Faker::Commerce.product_name }
   end
 end

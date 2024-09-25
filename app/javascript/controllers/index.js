@@ -7,3 +7,7 @@ application.register("new-product", NewProductController);
 // edit
 import EditProductController from "./edit_product_controller";
 application.register("edit-product", EditProductController);
+// sales variant
+import SalesController from "./sales_controller";
+application.register("sales", SalesController);
+//
