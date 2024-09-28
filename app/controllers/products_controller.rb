@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show edit update soft_delete confirm_soft_delete ]
 
   # GET /products or /products.json
   def index
@@ -99,22 +99,54 @@ class ProductsController < ApplicationController
   end
 
   # DELETE /products/1 or /products/1.json
-  def destroy
-    @product.destroy!
+  def soft_delete
+    if @product.update(deleted_at: Time.current)
+      redirect_to products_path, notice: "Product '#{@product.name}' has been archived."
+    else
+      redirect_to @product, alert: "Failed to archive the product."
+    end
+  end
 
-    respond_to do |format|
-      format.html { redirect_to products_url, notice: "Product was successfully destroyed." }
-      format.json { head :no_content }
+  def archive
+    @archived_products = Product.unscoped.where.not(deleted_at: nil)
+  end
+
+  # def restore
+  #   if @product.update(deleted_at: nil)
+  #     redirect_to archive_products_path, notice: "Product '#{@product.name}' has been restored."
+  #   else
+  #     redirect_to archive_products_path, alert: "Failed to restore the product."
+  #   end
+  # end
+  def restore
+    @product = Product.unscoped.find_by(id: params[:id])
+
+    if @product.nil?
+      redirect_to archive_products_path, alert: "Product not found."
+    elsif @product.update(deleted_at: nil)
+      redirect_to archive_products_path, notice: "Product '#{@product.name}' has been restored."
+    else
+      redirect_to archive_products_path, alert: "Failed to restore the product."
+    end
+  end
+
+  def confirm_soft_delete
+    if @product.update(deleted_at: Time.current)
+      redirect_to products_path, notice: "product '#{@product.name}' was successfully archived."
+      else
+        redirect_to products_path, alert: "There was an error archiving the product."
     end
   end
 
   private
+
+    def set_product
+      @product = Product.unscoped.find(params[:id])
+      redirect_to products_path, alert: "Product not found." if @product.nil?
+    end
     # Use callbacks to share common setup or constraints between actions.
     def create_default_variant
       @product.product_variants.create(price: params[:price], stock_quantity: params[:stock_quantity])
-    end
-    def set_product
-      @product = Product.find(params[:id])
     end
     # Only allow a list of trusted parameters through.
     def product_params

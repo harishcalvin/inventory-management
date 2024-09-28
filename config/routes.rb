@@ -1,15 +1,23 @@
 Rails.application.routes.draw do
-  resources :sales
-  resources :products
-  resources :sold_items
-  resources :products do
-    get 'variants', on: :member
-  end
-  get "home/index"
   root "home#index"
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :sales
+  resources :sold_items
 
+  resources :products do
+    member do
+      get :variants
+      patch :soft_delete
+      patch :restore
+    end
+    collection do
+      get :archive
+    end
+  end
+
+  get "home/index"
+
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
