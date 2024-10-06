@@ -7,26 +7,26 @@
 - **Product Add**
   - With Variants ✅
   - Without Variants ✅
+  - product filter ❌
 - **Soft Delete (archive) & Restore** ✅
   - View (archive page)
 - **Edit Product**
 
   - With Variants ✅
-  - Without Variants ❌
+  - Without Variants ✅
 
 - **Billing Calculator** ✅
 
 - **Sales History** ✅
   - When a product is soft deleted, in the sales history page the deleted product is shown with '(deleted)'
+  - Sales filter ❌
 
-## 🐞 Not Working / Bugs
+## 🐞 Issues :
 
-- **Edit Product without Variants** ❌
+- **Edit Product without Variants** ✅ (FIXED)
   - **Issue**: After editing a product without variants, product creates another variant, and updates database. On the billing page, when this product is selected, it shows the new variant options. For example, if I edit only the title, it duplicates the product_variants (size/color/ material ("default" value) and price, and stock_quantity) with the same values. When I edit the price or stock, it creates another variant with the new values, but the original product_variants values remain uneditable and can't be removed.
 
----
-
-### 💡 Image Upload
+### 💡 Image Upload. (FIXED)
 
 - **Correct UI before editing product without variants**
   ![Product_without_variant_showpage](./app_files/product_without_variant_original.jpg)
