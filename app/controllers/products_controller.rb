@@ -19,7 +19,7 @@ class ProductsController < ApplicationController
   end
   # GET /products/1/edit
   def edit
-   @product.product_variants.build.build_variant.variant_options.build if @product.product_variants.empty?
+    @product.product_variants.build if @product.product_variants.empty?
   end
 
   def variants
@@ -65,19 +65,11 @@ class ProductsController < ApplicationController
   # PATCH/PUT /products/1 or /products/1.json
   def update
     respond_to do |format|
-      if @product.update(product_params)
+      if @product.update(product_params.except(:price, :stock_quantity))
         if params[:variants].present?
-          variants = JSON.parse(params[:variants])
-          @product.product_variants.destroy_all
-          variants.each do |variant|
-            @product.product_variants.create(
-              size: variant["size"],
-              color: variant["color"],
-              material: variant["material"],
-              price: variant["price"],
-              stock_quantity: variant["stock_quantity"]
-            )
-          end
+          update_explicit_variants(JSON.parse(params[:variants]))
+        else
+          update_single_variant
         end
         format.html { redirect_to @product, notice: "Product was successfully updated." }
         format.json { render :show, status: :ok, location: @product }
@@ -123,13 +115,34 @@ class ProductsController < ApplicationController
   def confirm_soft_delete
     if @product.update(deleted_at: Time.current)
       redirect_to products_path, notice: "product '#{@product.name}' was successfully archived."
-      else
+    else
         redirect_to products_path, alert: "There was an error archiving the product."
     end
   end
 
   private
+  def update_explicit_variants(variants)
+    variants.each do |variant|
+      existing_variant = @product.product_variants.find_or_initialize_by(
+        size: variant["size"],
+        color: variant["color"],
+        material: variant["material"]
+      )
+      existing_variant.price = variant["price"] if variant["price"].present?
+      existing_variant.stock_quantity = variant["stock_quantity"] if variant["stock_quantity"].present?
+      existing_variant.save
+    end
+  end
 
+  def update_single_variant
+    variant = @product.product_variants.first_or_create(size: "Default")
+    if params[:product][:price].present? || params[:product][:stock_quantity].present?
+      variant.update(
+        price: params[:product][:price] || variant.price,
+        stock_quantity: params[:product][:stock_quantity] || variant.stock_quantity
+      )
+    end
+  end
     def set_product
       @product = Product.unscoped.find(params[:id])
       redirect_to products_path, alert: "Product not found." if @product.nil?
