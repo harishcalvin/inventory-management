@@ -11,3 +11,5 @@ application.register("edit-product", EditProductController);
 import SalesController from "./sales_controller";
 application.register("sales", SalesController);
 //
+import CatalogController from "./catalog_controller";
+application.register("catalog", CatalogController);

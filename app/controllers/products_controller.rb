@@ -120,6 +120,28 @@ class ProductsController < ApplicationController
     end
   end
 
+  def catalog
+    @products = Product.includes(:category, :supplier, :product_variants)
+    @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
+
+    if params[:sort].present?
+      case params[:sort]
+      when "name-asc"
+        @products = @products.order(name: :asc)
+      when "name-desc"
+        @products = @products.order(name: :desc)
+      when "price-asc"
+        @products = @products.joins(:product_variants).order("product_variants.price ASC")
+      when "price-desc"
+        @products = @products.joins(:product_variants).order("product_variants.price DESC")
+      end
+    end
+
+    if request.xhr?
+      render partial: "products", locals: { products: @products }, layout: false
+    end
+  end
+
   private
   def update_explicit_variants(variants)
     variants.each do |variant|

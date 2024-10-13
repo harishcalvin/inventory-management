@@ -1,0 +1,31 @@
+<div class="container mx-auto px-4 py-8" data-controller="catalog">
+  <h1 class="text-3xl font-bold mb-6">Product Catalog</h1>
+  <div class="mb-4">
+    <label for="category-filter" class="mr-2">Filter by Category:</label>
+    <select id="category-filter" class="border rounded p-1" data-catalog-target="categoryFilter" data-action="change->catalog#filterProducts">
+      <option value="">All Categories</option>
+      <% Category.all.each do |category| %>
+        <option value="<%= category.id %>"><%= category.name %></option>
+      <% end %>
+    </select>
+    <label for="sort-select" class="ml-4 mr-2">Sort by:</label>
+    <select id="sort-select" class="border rounded p-1" data-catalog-target="sortSelect" data-action="change->catalog#sortProducts">
+      <option value="name-asc">Name (A-Z)</option>
+      <option value="name-desc">Name (Z-A)</option>
+      <option value="price-asc">Price (Low to High)</option>
+      <option value="price-desc">Price (High to Low)</option>
+    </select>
+  </div>
+  <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-catalog-target="productList">
+    <%= render partial: 'products', locals: { products: @products } %>
+  </div>
+</div>
+<style>
+  .no-items-message {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    color: #666;
+  }
+</style>
