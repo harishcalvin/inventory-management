@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env bash
 set -o errexit
 
@@ -21,3 +22,12 @@ echo "Diagnosing database..."
 RAILS_ENV=production bundle exec rails db:diagnose
 
 echo "Build process completed."
+=======
+     #!/usr/bin/env bash
+     set -o errexit
+     bundle install
+     bundle exec rails assets:precompile
+     bundle exec rails assets:clean
+     # Uncomment the following line if using a Free instance:
+     # bundle exec rails db:migrate
+>>>>>>> parent of 43fe265 (Uncomment database migration in render build script)
