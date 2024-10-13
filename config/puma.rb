@@ -32,3 +32,11 @@ plugin :tmp_restart
 # Specify the PID file. Defaults to tmp/pids/server.pid in development.
 # In other environments, only set the PID file if requested.
 pidfile ENV["PIDFILE"] if ENV["PIDFILE"]
+if ENV["RAILS_ENV"] == "production"
+  workers ENV.fetch("WEB_CONCURRENCY") { 4 }
+  preload_app!
+
+  on_worker_boot do
+    ActiveRecord::Base.establish_connection
+  end
+end
