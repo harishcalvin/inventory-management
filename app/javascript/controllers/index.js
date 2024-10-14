@@ -4,10 +4,10 @@ import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading";
 
 eagerLoadControllersFrom("controllers", application);
 
-import NewProductController from "./new_product_controller";
-import EditProductController from "./edit_product_controller";
-import SalesController from "./sales_controller";
-import CatalogController from "./catalog_controller";
+import NewProductController from "./new_product_controller.js";
+import EditProductController from "./edit_product_controller.js";
+import SalesController from "./sales_controller.js";
+import CatalogController from "./catalog_controller.js";
 
 application.register("new-product", NewProductController);
 application.register("edit-product", EditProductController);
