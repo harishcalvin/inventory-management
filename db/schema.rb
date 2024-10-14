@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_26_071221) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_14_041820) do
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.decimal "gst"
