@@ -1,17 +1,28 @@
 # Inventory management app
 
-- Add/Edit/Delete products with or without variants.
+- Add/Edit/Archive/Restore products with or without variants.
 - Generate bills.
 - View sales history.
-- View deleted products and restore.
+- View archived (deleted) products and restore.
 
-## app
+## Demo
+
+![demo video](./app_files/Im-demo-video.mp4)
+
+## Preview
 
 - Products view :
-- ![list of all products](./app_files/products_view.jpg)
+
+![list of all products](./app_files/products_view.jpg)
 
 - Bills view :
-- ![view bills page to generate sales"](./app_files/bill_view.jpg)
+
+![view bills page to generate sales"](./app_files/bill_view.jpg)
 
 - Sales history view :
-- ![view sales history page](./app_files/sales_history_view.jpg)
+
+![view sales history page](./app_files/sales_history_view.jpg)
+
+### Deployed on render.com
+
+[view live app](https://inventory-management-im.onrender.com/)
