@@ -7,7 +7,7 @@
 
 ## Demo
 
-![demo video](./app_files/Im-demo-video.mp4)
+[![demo video](./app_files/Im-demo-video.mp4)](https://github.com/user-attachments/assets/27a59e04-54db-4472-b88b-2d6e7c70f62c)
 
 ## Preview
 
